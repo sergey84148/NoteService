@@ -1,8 +1,9 @@
+import com.example.notes.repository.InMemoryCommentsRepository
 import model.Comment
 import model.Note
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
-import repository.InMemoryCommentsRepository
+
 
 internal class NotesAndCommentsTest {
     @Test
