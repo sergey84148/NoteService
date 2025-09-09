@@ -1,23 +1,31 @@
-name: CI (Kotlin + Gradle)
+name: CI Tests
 
 on:
   push:
-    branches: ["main"]
+    branches: [ main ] # Выполнять при пушах в основную ветку
   pull_request:
-    types: [opened, synchronize, reopened]
+    branches: [ main ] # Выполнять при создании PR в основную ветку
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  build-and-test:
+    runs-on: ubuntu-latest # Использовать виртуальную машину Ubuntu последней версии
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Set up JDK 17
+    - uses: actions/checkout@v3 # Клонируем репозиторий
+      
+    - name: Set up JDK 17 # Устанавливаем JDK 17
       uses: actions/setup-java@v3
       with:
         java-version: '17'
-        distribution: 'temurin'
-    - name: Grant execute permission for gradlew
-      run: chmod +x ./gradlew
-    - name: Build with Gradle
-      run: ./gradlew clean check
+        distribution: 'adopt'
+
+    - name: Cache gradle dependencies # Кэшируем зависимости gradle для ускорения последующих запусков
+      uses: actions/cache@v3
+      with:
+        path: ~/.gradle/caches
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+          
+    - name: Build with Gradle # Собираем проект и запускаем тесты
+      run: ./gradlew build --stacktrace
